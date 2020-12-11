@@ -17,6 +17,7 @@ import hashlib
 import binascii
 import codecs
 import argparse
+import random
 from Crypto.Cipher import AES
 
 
@@ -180,7 +181,10 @@ class CloudMusic:
                                 'type': 'song',
                                 'wifi': 0
                             }
-                        }, musicId[:500])))
+                        },
+                        random.sample(
+                            musicId,
+                            420 if len(musicId) > 420 else len(musicId)))))
         })
         res = self.session.post(
             url="http://music.163.com/weapi/feedback/weblog",
@@ -202,7 +206,10 @@ def getArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("phone", help="your Phone Number")
     parser.add_argument("password", help="MD5 value of the password")
-    parser.add_argument("-s", dest="SCKEY", help="SCKEY of the Server Chan")
+    parser.add_argument("-s",
+                        dest="SCKEY",
+                        nargs='*',
+                        help="SCKEY of the Server Chan")
     parser.add_argument("-l", dest="PLAYLIST", nargs='*', help="your playlist")
     args = parser.parse_args()
 
@@ -231,9 +238,8 @@ if __name__ == "__main__":
         res = res_login + "\n\n" + res_sign + "\n\n" + res_task
         if info['sckey']:
             # 调用Server酱
-            app.server_chan(info['sckey'], res)
-        else:
-            print(res)
+            app.server_chan(info['sckey'][0], res)
+        print(res)
     except KeyboardInterrupt:
         print(30 * "=")
         exit()
